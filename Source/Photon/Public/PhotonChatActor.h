@@ -30,23 +30,30 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	// Prop
-	UPROPERTY(EditAnywhere, Category = "Photon | Common")
-		FString ServerAddress;
-	UPROPERTY(EditAnywhere, Category = "Photon | Common")
-		FString AppID;
-	UPROPERTY(EditAnywhere, Category = "Photon | Common")
-		FString AppVersion;
-
 	// Func
 	UFUNCTION(BlueprintCallable, Category = "Photon | Common")
-		void Setup();
+		void Setup(FString AppID, FString AppVersion, FString UserID);
 	UFUNCTION(BlueprintCallable, Category = "Photon | Common")
 		void Update();
 
+	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
+		void Disconnect() {
+		mpClient->disconnect();
+	}
+
 private:
+	// Prop
+	FString mServerAddress;
+	FString mAppID;
+	FString mAppVersion;
+	FString mUserID;
+
 	ExitGames::Chat::Client* mpClient;
 	PhotonChatListner* mpListner;
+
+	// Flags
+	bool mIsConnectedServer;
+	bool mIsJoinedRoom;
 
 	// Util
 	ExitGames::Common::JString ToJString(FString fstr);

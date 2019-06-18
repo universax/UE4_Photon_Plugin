@@ -56,7 +56,7 @@ void PhotonChatListner::connectReturn(int errorCode, const ExitGames::Common::JS
 	if (errorCode == ErrorCode::OK)
 	{
 		Console::get().writeLine(L"Chat: connected");
-		//mpLbc->opJoinRandomRoom();
+		
 	}
 	else
 		Console::get().writeLine(JString(L"Chat: Warn: connect failed ") + errorCode + L" " + errorString);

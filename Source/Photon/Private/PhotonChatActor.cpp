@@ -8,9 +8,9 @@ using namespace ExitGames::Chat;
 
 // Sets default values
 APhotonChatActor::APhotonChatActor()
-	:ServerAddress("ns.exitgames.com"),
-	AppID("48f4b761-26cd-49a4-841f-aa0bf81124cf"),
-	AppVersion("1.0")
+	:mServerAddress("ns.exitgames.com"),
+	mIsConnectedServer(false),
+	mIsJoinedRoom(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,7 +20,6 @@ APhotonChatActor::APhotonChatActor()
 void APhotonChatActor::BeginPlay()
 {
 	Super::BeginPlay();
-	Setup();
 }
 
 // Called every frame
@@ -30,14 +29,18 @@ void APhotonChatActor::Tick(float DeltaTime)
 	Update();
 }
 
-void APhotonChatActor::Setup()
+void APhotonChatActor::Setup(FString AppID, FString AppVersion, FString UserID)
 {
+	mAppID = AppID;
+	mAppVersion = AppVersion;
+	mUserID = UserID;
+
 	mpListner = new PhotonChatListner(this);
-	mpClient = new Client(*mpListner, TCHAR_TO_UTF8(*AppID), TCHAR_TO_UTF8(*AppVersion), ExitGames::Photon::ConnectionProtocol::DEFAULT);
+	mpClient = new Client(*mpListner, TCHAR_TO_UTF8(*mAppID), TCHAR_TO_UTF8(*mAppVersion), ExitGames::Photon::ConnectionProtocol::DEFAULT);
 	
 	Console::get().writeLine(L"Connecting...");
-	Console::get().writeLine(L"appID is set to " + ExitGames::Common::JString(TCHAR_TO_UTF8(*AppID)));
-	bool connect = mpClient->connect(AuthenticationValues().setUserID(JString(L"UR") + GETTIMEMS()), TCHAR_TO_UTF8(*ServerAddress));
+	Console::get().writeLine(L"appID is set to " + ExitGames::Common::JString(TCHAR_TO_UTF8(*mAppID)));
+	bool connect = mpClient->connect(AuthenticationValues().setUserID(ToJString(mUserID)), TCHAR_TO_UTF8(*mServerAddress));
 }
 
 void APhotonChatActor::Update()

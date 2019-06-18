@@ -13,6 +13,8 @@ class ListnerBase
 public:
 	virtual ~ListnerBase(void) {}
 	//virtual void updateState(int state, const ExitGames::Common::JString& stateStr, const ExitGames::Common::JString& joinedRoomName) = 0;
+	virtual void OnConnectServer(void) = 0;
+	virtual void OnDisconnectServer(void) = 0;
 	virtual void initPlayers(void) {}
 	virtual void OnJoinRoomEventAction(int playerNr, const ExitGames::Common::JString& playerName, bool local) = 0;
 	virtual void OnLeaveRoomEventAction(int playerNr) = 0;

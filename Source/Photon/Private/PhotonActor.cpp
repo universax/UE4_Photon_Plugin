@@ -9,9 +9,9 @@ using namespace ExitGames::LoadBalancing;
 
 // Sets default values
 APhotonActor::APhotonActor()
-	:ServerAddress("ns.exitgames.com"),
-	AppID("48f4b761-26cd-49a4-841f-aa0bf81124cf"),
-	AppVersion("1.0")
+	:mServerAddress("ns.exitgames.com"),
+	mIsConnectedServer(false),
+	mIsJoinedRoom(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -21,7 +21,6 @@ APhotonActor::APhotonActor()
 void APhotonActor::BeginPlay()
 {
 	Super::BeginPlay();
-	Setup();
 }
 
 // Called every frame
@@ -32,15 +31,19 @@ void APhotonActor::Tick(float DeltaTime)
 	Update();
 }
 
-void APhotonActor::Setup()
+void APhotonActor::Setup(FString AppID, FString AppVersion, FString UserID)
 {
+	mAppID = AppID;
+	mAppVersion = AppVersion;
+	mUserID = UserID;
+
 	mpListener = new LoadBalancingListener(this);
-	mpClient = new ExitGames::LoadBalancing::Client(*mpListener, TCHAR_TO_UTF8(*AppID), TCHAR_TO_UTF8(*AppVersion), ExitGames::Photon::ConnectionProtocol::DEFAULT, false, RegionSelectionMode::BEST);
+	mpClient = new ExitGames::LoadBalancing::Client(*mpListener, TCHAR_TO_UTF8(*mAppID), TCHAR_TO_UTF8(*mAppVersion), ExitGames::Photon::ConnectionProtocol::DEFAULT, false, RegionSelectionMode::BEST);
 	mpListener->setLBC(mpClient);
 
 	Console::get().writeLine(L"Connecting...");
-	Console::get().writeLine(L"appID is set to " + ExitGames::Common::JString(TCHAR_TO_UTF8(*AppID)));
-	bool connect = mpClient->connect(ExitGames::LoadBalancing::AuthenticationValues().setUserID(ExitGames::Common::JString(L"UR") + GETTIMEMS()), ExitGames::Common::JString(L"UR") + GETTIMEMS(), TCHAR_TO_UTF8(*ServerAddress));
+	Console::get().writeLine(L"appID is set to " + ExitGames::Common::JString(TCHAR_TO_UTF8(*mAppID)));
+	bool connect = mpClient->connect(ExitGames::LoadBalancing::AuthenticationValues().setUserID(ToJString(mUserID)), ToJString(mUserID), TCHAR_TO_UTF8(*mServerAddress));
 }
 
 void APhotonActor::Update()
@@ -55,7 +58,11 @@ void APhotonActor::Update()
 
 void APhotonActor::CreateRoom(FString name)
 {
-	mpListener->createRoom(ExitGames::Common::JString(TCHAR_TO_UTF8(*name)));
+	if (mpListener)
+	{
+		mpListener->createRoom(ExitGames::Common::JString(TCHAR_TO_UTF8(*name)));
+	}
+	
 }
 
 TArray<FString> APhotonActor::GetRoomList()
@@ -73,12 +80,36 @@ TArray<FString> APhotonActor::GetRoomList()
 
 void APhotonActor::JoinRoom(FString name)
 {
-	mpClient->opJoinRoom(ToJString(name));
+	if (mpClient && !mIsJoinedRoom)
+	{
+		mpClient->opJoinRoom(ToJString(name));
+	}
 }
 
 void APhotonActor::LeaveRoom()
 {
-	mpClient->opLeaveRoom();
+	if (mIsJoinedRoom) {
+		if (mpClient->opLeaveRoom()) {
+			Console::get().writeLine(L"Success Leave Room");
+			mIsJoinedRoom = false;
+		}
+		else {
+			Console::get().writeLine(L"Error: Leave Room");
+		}
+	}
+	else {
+		Console::get().writeLine(L"Error: Not Joined any rooms");
+	}
+}
+
+bool APhotonActor::GetIsInRoom()
+{
+	if (mpClient)
+	{
+		return mpClient->getIsInGameRoom();
+	}
+	
+	return false;
 }
 
 void APhotonActor::SendLocalTransform(FTransform transform)
@@ -99,7 +130,11 @@ void APhotonActor::SendLocalTransform(FTransform transform)
 		static_cast<float>(rotation.W)
 	};
 	data.put((nByte)1, posture, 7);
-	mpClient->opRaiseEvent(false, data, 2);
+	if (mpClient && mIsJoinedRoom)
+	{
+		mpClient->opRaiseEvent(false, data, 2);
+	}
+	
 }
 
 

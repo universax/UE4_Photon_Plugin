@@ -9,5 +9,10 @@ class ChatListnerBase
 {
 public:
 	~ChatListnerBase(void) {}
-	//virtual void hello() = 0;
+	//virtual void OnConnectServer(void) = 0;
+	//virtual void OnDisconnectServer(void) = 0;
+	//virtual void OnSubscribeChannel(void) = 0;
+	//virtual void OnUnsubscribeChannel(void) = 0;
+	//virtual void OnStatusUpdate(void) = 0;
+	//virtual void OnGetMessage(void) = 0;
 };

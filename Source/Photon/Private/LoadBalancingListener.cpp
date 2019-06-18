@@ -168,7 +168,7 @@ void LoadBalancingListener::connectReturn(int errorCode, const JString& errorStr
 	if(errorCode == ErrorCode::OK)
 	{
 		Console::get().writeLine(L"connected to cluster " + cluster + L" of region " + region);
-		//mpLbc->opJoinRandomRoom();
+		ue4Listner->OnConnectServer();
 	}
 	else
 		Console::get().writeLine(JString(L"Warn: connect failed ") + errorCode + L" " + errorString);
@@ -177,6 +177,7 @@ void LoadBalancingListener::connectReturn(int errorCode, const JString& errorStr
 void LoadBalancingListener::disconnectReturn(void)
 {
 	updateState();
+	ue4Listner->OnDisconnectServer();
 	Console::get().writeLine(L"disconnected");
 }
 

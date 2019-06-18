@@ -18,7 +18,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FJoinRoomDelegate, int32, playerNr, FString, playerName, bool, local, const TArray<UPhotonPlayer*>&, players);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FPlayerTransformDelegate, int32, playerNr, FVector, pos, FRotator, rot);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLeaveRoomDelegate, int32, playerNr);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerConnectionDelegate, bool, isConnected);
 
 UCLASS()
 class PHOTON_API APhotonActor : public AActor, public ListnerBase
@@ -40,21 +40,17 @@ public:
 
 
 public:
-	// Prop
-	UPROPERTY(EditAnywhere, Category = "Photon | Common")
-	FString ServerAddress;
-	UPROPERTY(EditAnywhere, Category = "Photon | Common")
-	FString AppID;
-	UPROPERTY(EditAnywhere, Category = "Photon | Common")
-	FString AppVersion;
-
 	// Func
 	UFUNCTION(BlueprintCallable, Category = "Photon | Common")
-		void Setup();
+		void Setup(FString AppID, FString AppVersion, FString UserID);
 	UFUNCTION(BlueprintCallable, Category = "Photon | Common")
 		void Update();
 
 	// For Debug
+	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
+		void Disconnect() {
+		mpClient->disconnect();
+	}
 	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
 		void CreateRoom(FString name);
 	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
@@ -64,7 +60,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
 		void LeaveRoom();
 	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
-		bool GetIsInRoom() { return mpClient->getIsInGameRoom(); }
+		bool GetIsInRoom();
 
 
 	// Callback from Listner
@@ -72,6 +68,10 @@ public:
 	FJoinRoomDelegate OnJoinRoomEventDelegate;
 	virtual void OnJoinRoomEventAction(int playerNr, const ExitGames::Common::JString& playerName, bool local) {
 		Console::get().writeLine(L"OnJoinRoomEventAction");
+		if (local)
+		{
+			mIsJoinedRoom = true;
+		}
 		ExitGames::LoadBalancing::MutableRoom room = mpClient->getCurrentlyJoinedRoom();
 		ExitGames::Common::JVector<ExitGames::LoadBalancing::Player*> players = room.getPlayers();
 		TArray<UPhotonPlayer*> photonPlayers;
@@ -97,6 +97,16 @@ public:
 		FRotator r(q);
 		OnPlayerTransformDelegate.Broadcast(playerNr, p, r);
 	}
+	UPROPERTY(BlueprintAssignable, Category = "Photon | Callback")
+		FServerConnectionDelegate OnServerConnectionDelegate;
+	virtual void OnConnectServer(void) {
+		OnServerConnectionDelegate.Broadcast(true);
+		mIsConnectedServer = true;
+	}
+	virtual void OnDisconnectServer(void) {
+		OnServerConnectionDelegate.Broadcast(false);
+		mIsConnectedServer = false;
+	}
 
 	// Send local player event
 	// Spawn
@@ -112,10 +122,17 @@ public:
 
 
 private:
+	// Prop
+	FString mServerAddress;
+	FString mAppID;
+	FString mAppVersion;
+	FString mUserID;
+
 	ExitGames::LoadBalancing::Client* mpClient;
 	LoadBalancingListener* mpListener;
 
 	// Flags
+	bool mIsConnectedServer;
 	bool mIsJoinedRoom;
 
 	// Util
