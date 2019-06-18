@@ -11,14 +11,6 @@
 using namespace ExitGames::Common;
 using namespace ExitGames::LoadBalancing;
 
-static int randomColor(int from=0, int to=256)
-{
-	int r = from + rand() % (to - from);
-	int g = from + rand() % (to - from);
-	int b = from + rand() % (to - from);
-	return (r << 16) + (g << 8) + b;
-}
-
 const JString PeerStatesStr[] = {
 	L"Uninitialized",
 	L"PeerCreated",
@@ -57,10 +49,8 @@ public:
 	}
 } checker;
 
-LocalPlayer::LocalPlayer(void) : x(0), y(0), color(randomColor(100)), lastUpdateTime(0)
-{
-	
-}
+
+
 
 LoadBalancingListener::LoadBalancingListener(ListnerBase* listnerBase) : ue4Listner(listnerBase), mpLbc(NULL), mLocalPlayerNr(0)
 {
@@ -420,6 +410,5 @@ bool LoadBalancingListener::setLocalPlayerPos(int x, int y)
 void LoadBalancingListener::raiseColorEvent(void)
 {
 	Hashtable data;
-	data.put((nByte)1, mLocalPlayer.color);
 	//mpLbc->opRaiseEvent(true, data, 1, RaiseEventOptions().setEventCaching(ExitGames::Lite::EventCache::ADD_TO_ROOM_CACHE).setInterestGroup(mSendGroup?mSendGroup:mUseGroups?getGroupByPos():0));
 }

@@ -3,15 +3,6 @@
 #include "LoadBalancing-cpp/inc/Client.h"
 #include "ListnerBase.h"
 
-struct LocalPlayer
-{
-	LocalPlayer();
-	int x;
-	int y;
-	int color;
-	unsigned long lastUpdateTime;
-};
-
 class LoadBalancingListener : public ExitGames::LoadBalancing::Listener
 {
 public: 
@@ -29,7 +20,6 @@ public:
 	const ExitGames::LoadBalancing::Client* getClient() {
 		return mpLbc;
 	}
-
 
 
 	// Delegate for UE4
@@ -77,7 +67,6 @@ private:
 	void raiseColorEvent(void);
 
 	ExitGames::LoadBalancing::Client* mpLbc;
-	LocalPlayer mLocalPlayer;
 	int mLocalPlayerNr;
 	int mGridSize;
 	ExitGames::Common::JString mMap;

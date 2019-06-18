@@ -53,6 +53,7 @@ public:
 		void Setup();
 	UFUNCTION(BlueprintCallable, Category = "Photon | Common")
 		void Update();
+
 	// For Debug
 	UFUNCTION(BlueprintCallable, Category = "Photon | Debug")
 		void CreateRoom(FString name);

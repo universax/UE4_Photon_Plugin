@@ -60,6 +60,7 @@ public class Photon : ModuleRules
             AddPhotonLibPathWin(Target, "Common");
             AddPhotonLibPathWin(Target, "Photon");
             AddPhotonLibPathWin(Target, "LoadBalancing");
+            AddPhotonLibPathWin(Target, "Chat");
         }
         else if (Target.Platform == UnrealTargetPlatform.Android)
         {
@@ -67,6 +68,7 @@ public class Photon : ModuleRules
             AddPhotonLibPathAndroid(Target, "common");
             AddPhotonLibPathAndroid(Target, "photon");
             AddPhotonLibPathAndroid(Target, "loadbalancing");
+            AddPhotonLibPathAndroid(Target, "chat");
         }
         else if (Target.Platform == UnrealTargetPlatform.IOS)
         {
@@ -74,6 +76,7 @@ public class Photon : ModuleRules
             AddPhotonLibPathIOS(Target, "Common");
             AddPhotonLibPathIOS(Target, "Photon");
             AddPhotonLibPathIOS(Target, "LoadBalancing");
+            AddPhotonLibPathIOS(Target, "Chat");
         }
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
@@ -81,6 +84,7 @@ public class Photon : ModuleRules
             AddPhotonLibPathMac(Target, "Common");
             AddPhotonLibPathMac(Target, "Photon");
             AddPhotonLibPathMac(Target, "LoadBalancing");
+            AddPhotonLibPathMac(Target, "Chat");
         }
         else
         {

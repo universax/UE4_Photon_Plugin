@@ -3,9 +3,6 @@
 
 #include "PhotonActor.h"
 
-#include "Photon.h"
-
-
 using namespace ExitGames::Common;
 using namespace ExitGames::LoadBalancing;
 
@@ -37,10 +34,6 @@ void APhotonActor::Tick(float DeltaTime)
 
 void APhotonActor::Setup()
 {
-	ServerAddress = ServerAddress;
-	AppID = AppID;
-	AppVersion = AppVersion;
-
 	mpListener = new LoadBalancingListener(this);
 	mpClient = new ExitGames::LoadBalancing::Client(*mpListener, TCHAR_TO_UTF8(*AppID), TCHAR_TO_UTF8(*AppVersion), ExitGames::Photon::ConnectionProtocol::DEFAULT, false, RegionSelectionMode::BEST);
 	mpListener->setLBC(mpClient);
