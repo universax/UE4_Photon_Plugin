@@ -43,7 +43,7 @@ void APhotonActor::Setup(FString AppID, FString AppVersion, FString UserID)
 
 	Console::get().writeLine(L"Connecting...");
 	Console::get().writeLine(L"appID is set to " + ExitGames::Common::JString(TCHAR_TO_UTF8(*mAppID)));
-	bool connect = mpClient->connect(ExitGames::LoadBalancing::AuthenticationValues().setUserID(ToJString(mUserID)), ToJString(mUserID), TCHAR_TO_UTF8(*mServerAddress));
+	bool connect = mpClient->connect(ExitGames::LoadBalancing::AuthenticationValues().setUserID(Console::get().ToJString(mUserID)), Console::get().ToJString(mUserID), TCHAR_TO_UTF8(*mServerAddress));
 }
 
 void APhotonActor::Update()
@@ -67,13 +67,17 @@ void APhotonActor::CreateRoom(FString name)
 
 TArray<FString> APhotonActor::GetRoomList()
 {
-	const JVector<Room*>& rooms = mpClient->getRoomList();
-	//const JVector<Room*>& rooms = mpListener->getClient()->getRoomList();
 	TArray<FString> names;
-	for (unsigned int i = 0; i < rooms.getSize(); ++i) {
-		JString name = rooms[i]->getName();
-		names.Add(ToFString(name));
-		Console::get().writeLine(L"Room: " + name);
+	if (mpClient)
+	{
+		const JVector<Room*>& rooms = mpClient->getRoomList();
+		//const JVector<Room*>& rooms = mpListener->getClient()->getRoomList();
+
+		for (unsigned int i = 0; i < rooms.getSize(); ++i) {
+			JString name = rooms[i]->getName();
+			names.Add(Console::get().ToFString(name));
+			Console::get().writeLine(L"Room: " + name);
+		}
 	}
 	return names;
 }
@@ -82,7 +86,7 @@ void APhotonActor::JoinRoom(FString name)
 {
 	if (mpClient && !mIsJoinedRoom)
 	{
-		mpClient->opJoinRoom(ToJString(name));
+		mpClient->opJoinRoom(Console::get().ToJString(name));
 	}
 }
 
@@ -135,15 +139,4 @@ void APhotonActor::SendLocalTransform(FTransform transform)
 		mpClient->opRaiseEvent(false, data, 2);
 	}
 	
-}
-
-
-// ------------------------------------------------------------
-JString APhotonActor::ToJString(FString fstr) {
-	return ExitGames::Common::JString(TCHAR_TO_UTF8(*fstr));
-}
-
-FString APhotonActor::ToFString(ExitGames::Common::JString jstr) {
-	std::string cstr = jstr.UTF8Representation().cstr();
-	return cstr.c_str();
 }

@@ -31,3 +31,35 @@ Console& Console::get(void)
 	static Console console;
 	return console;
 }
+
+// ------------------------------------------------------------
+ExitGames::Common::JString Console::ToJString(FString fstr) {
+	return ExitGames::Common::JString(TCHAR_TO_UTF8(*fstr));
+}
+
+FString Console::ToFString(ExitGames::Common::JString jstr) {
+	std::string cstr = jstr.UTF8Representation().cstr();
+	return cstr.c_str();
+}
+
+TArray<FString> Console::ToTArray(const ExitGames::Common::JVector<ExitGames::Common::JString>& jVector)
+{
+	TArray<FString> tArray;
+	for (unsigned int i = 0; i < jVector.getSize(); i++)
+	{
+		FString str = ToFString(jVector[i]);
+		tArray.Add(str);
+	}
+	return tArray;
+}
+
+TArray<bool> Console::ToTArray(const ExitGames::Common::JVector<bool>& jVector)
+{
+	TArray<bool> tArray;
+	for (unsigned int i = 0; i < jVector.getSize(); i++)
+	{
+		bool b = jVector[i];
+		tArray.Add(b);
+	}
+	return tArray;
+}

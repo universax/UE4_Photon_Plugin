@@ -65,7 +65,7 @@ public:
 
 	// Callback from Listner
 	UPROPERTY(BlueprintAssignable, Category = "Photon | Callback")
-	FJoinRoomDelegate OnJoinRoomEventDelegate;
+		FJoinRoomDelegate OnJoinRoomEventDelegate;
 	virtual void OnJoinRoomEventAction(int playerNr, const ExitGames::Common::JString& playerName, bool local) {
 		Console::get().writeLine(L"OnJoinRoomEventAction");
 		if (local)
@@ -80,10 +80,10 @@ public:
 			p->SetPlayer(players[i]);
 			photonPlayers.AddUnique(p);
 		}
-		OnJoinRoomEventDelegate.Broadcast(playerNr, ToFString(playerName), local, photonPlayers);
+		OnJoinRoomEventDelegate.Broadcast(playerNr, Console::get().ToFString(playerName), local, photonPlayers);
 	}
 	UPROPERTY(BlueprintAssignable, Category = "Photon | Callback")
-	FLeaveRoomDelegate OnLeaveRoomEventDelegate;
+		FLeaveRoomDelegate OnLeaveRoomEventDelegate;
 	virtual void OnLeaveRoomEventAction(int playerNr) {
 		Console::get().writeLine(L"OnLeaveRoomEventAction");
 		OnLeaveRoomEventDelegate.Broadcast(playerNr);
@@ -134,9 +134,5 @@ private:
 	// Flags
 	bool mIsConnectedServer;
 	bool mIsJoinedRoom;
-
-	// Util
-	ExitGames::Common::JString ToJString(FString fstr);
-	FString ToFString(ExitGames::Common::JString jstr);
 
 };
